@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel Swadisht & Mess - Member & Attendance Portal</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              300: '#fdba74',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at 15% 15%, #fed7aa 0%, #fff7ed 40%, #f1f5f9 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+
+<body class="font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- TOP HEADER / BANNER -->
+  <header class="w-full glass-nav border-b border-orange-100/60 sticky top-0 z-40 transition-all shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30 transform -rotate-3">
+          <i class="fa-solid fa-utensils text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+            Hotel Swadisht <span class="text-brand-600 font-black"> & Mess</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full hidden sm:inline-block">Smart Portal</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-medium hidden sm:block">Daily Meal Track, Subscription Days & Attendance</p>
+        </div>
+      </div>
+
+      <!-- Quick Switch Tabs -->
+      <div class="flex p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 text-sm font-semibold">
+        <button id="nav-btn-lookup" onclick="switchMainTab('lookup')" class="px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 bg-white text-brand-600 shadow-sm">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          <span>Member Lookup</span>
+        </button>
+        <button id="nav-btn-admin" onclick="switchMainTab('admin')" class="px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 text-slate-600 hover:text-brand-600">
+          <i class="fa-solid fa-shield-halved text-xs"></i>
+          <span>Admin Control</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTENT -->
+  <main class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex-1">
+
+    <!-- Toast Notification Message -->
+    <div id="toast-notification" class="fixed top-20 right-4 sm:right-8 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+      <div id="toast-inner" class="px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border text-sm font-semibold">
+        <span id="toast-icon"></span>
+        <span id="toast-text">Alert message</span>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: MEMBER / STUDENT LOOKUP INTERFACE -->
+    <!-- ========================================== -->
+    <section id="view-lookup" class="space-y-6">
+      
+      <!-- Lookup Input Banner -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl shadow-orange-950/5 border border-white">
+        <div class="max-w-xl mx-auto text-center space-y-2 mb-6">
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100/70 px-3 py-1 rounded-full">
+            <i class="fa-solid fa-bell-concierge"></i> Check Food Validity & Balance
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Check Your Mess Days & Attendance</h2>
+          <p class="text-sm text-slate-500">Enter your 10-digit mobile number to see remaining days, meals taken, and subscription expiry.</p>
+        </div>
+
+        <div class="max-w-md mx-auto">
+          <div class="relative flex items-center">
+            <span class="absolute left-4 text-slate-400 font-bold text-sm">+91</span>
+            <input 
+              type="tel" 
+              id="student-search-phone" 
+              maxlength="10" 
+              placeholder="e.g. 9876543210" 
+              onkeydown="if(event.key === 'Enter') handleStudentLookup()"
+              class="w-full pl-14 pr-28 py-3.5 bg-white rounded-2xl border-2 border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none text-slate-800 font-semibold placeholder:font-normal placeholder:text-slate-400 transition"
+            />
+            <button 
+              onclick="handleStudentLookup()"
+              class="absolute right-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl font-bold text-xs tracking-wide shadow-md shadow-brand-500/30 transition flex items-center gap-1.5 active:scale-95"
+            >
+              <span>Search</span>
+              <i class="fa-solid fa-arrow-right text-[11px]"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-xs text-slate-400 mt-2 px-1">
+            <span> <button type="button" onclick="quickFillPhone('9876543210')" class="text-brand-600 font-semibold underline"></button>, <button type="button" onclick="quickFillPhone('9123456789')" class="text-brand-600 font-semibold underline"></button></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Data Details Box (Dynamic) -->
+      <div id="student-card-container" class="hidden">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Empty State / Greeting Placeholder -->
+      <div id="student-empty-state" class="text-center py-12 px-4 border-2 border-dashed border-slate-200/90 rounded-3xl bg-white/40">
+        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-brand-600 mx-auto text-2xl mb-3 shadow-inner">
+          <i class="fa-solid fa-id-card-clip"></i>
+        </div>
+        <h4 class="text-base font-bold text-slate-700">No Member Selected</h4>
+        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Please type your registered mobile number in the search bar above to view live days remaining and food history.</p>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: ADMIN CONTROL CENTER & MODIFIER   -->
+    <!-- ========================================== -->
+    <section id="view-admin" class="hidden space-y-6">
+
+      <!-- Admin Passcode Gate (Private, only Admin knows/sets) -->
+      <div id="admin-lock-screen" class="glass-card rounded-3xl p-8 max-w-md mx-auto text-center shadow-xl space-y-4">
+        <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <div>
+          <h3 class="text-xl font-extrabold text-slate-800">Admin Authentication</h3>
+          <p class="text-xs text-slate-500 mt-1">Restricted area for mess supervisor. Enter your private administrator PIN to proceed.</p>
+        </div>
+        <div class="space-y-3">
+          <div class="relative">
+            <input 
+              type="password" 
+              id="admin-pin-input" 
+              maxlength="10" 
+              placeholder="********"
+              onkeydown="if(event.key === 'Enter') unlockAdmin()"
+              class="w-full text-center tracking-widest text-xl font-bold py-3 bg-slate-50 rounded-2xl border-2 border-slate-200 focus:border-brand-500 focus:outline-none"
+            />
+            <button 
+              type="button" 
+              onclick="togglePinVisibility('admin-pin-input', 'lock-eye-icon')" 
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm"
+              title="Show/Hide PIN"
+            >
+              <i id="lock-eye-icon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <button 
+            onclick="unlockAdmin()"
+            class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-sm tracking-wide shadow-lg shadow-slate-900/20 transition active:scale-98"
+          >
+            Unlock Control Center
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Dashboard (Visible once unlocked) -->
+      <div id="admin-dashboard-content" class="hidden space-y-6">
+
+        <!-- Top Admin Stats & Quick Actions Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass-card p-4 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold text-slate-400">Total Members</p>
+              <h4 id="stat-total-members" class="text-2xl font-extrabold text-slate-800">0</h4>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-base"><i class="fa-solid fa-users"></i></div>
+          </div>
+
+          <div class="glass-card p-4 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold text-slate-400">Expiring Soon (&lt;3 Days)</p>
+              <h4 id="stat-expiring" class="text-2xl font-extrabold text-amber-600">0</h4>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-base"><i class="fa-solid fa-hourglass-half"></i></div>
+          </div>
+
+          <div class="glass-card p-4 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold text-slate-400">Pending Fees</p>
+              <h4 id="stat-pending-fees" class="text-2xl font-extrabold text-rose-600">0</h4>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-base"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+          </div>
+
+          <div class="glass-card p-4 rounded-2xl border border-white shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold text-slate-400">Today's Meals</p>
+              <h4 id="stat-today-meals" class="text-2xl font-extrabold text-emerald-600">0</h4>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base"><i class="fa-solid fa-bowl-rice"></i></div>
+          </div>
+        </div>
+
+        <!-- 2 Columns: Add/Edit Form & Live Members Roster -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          <!-- Left Column: Add / Modify Member Form (5 Cols) -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="glass-card rounded-3xl p-6 shadow-xl border border-white relative overflow-hidden">
+              <div id="form-mode-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-100 text-brand-700 mb-3">
+                <i class="fa-solid fa-user-plus"></i> <span id="form-mode-title">Add New Member</span>
+              </div>
+
+              <!-- Reset to New Button (Visible in Edit Mode) -->
+              <button 
+                id="btn-cancel-edit" 
+                onclick="resetFormToCreate()" 
+                class="hidden absolute top-6 right-6 text-xs text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold transition"
+              >
+                <i class="fa-solid fa-xmark mr-1"></i> Cancel Edit
+              </button>
+
+              <form id="member-form" onsubmit="handleFormSubmit(event)" class="space-y-3.5 text-xs">
+                
+                <div>
+                  <label class="font-bold text-slate-700 mb-1 block">Full Name *</label>
+                  <input type="text" id="inp-name" required placeholder="e.g. Rahul Patil" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-800 font-semibold outline-none text-sm transition" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Mobile Number *</label>
+                    <input type="tel" id="inp-phone" required maxlength="10" placeholder="10 digits" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-800 font-semibold outline-none text-sm transition" />
+                  </div>
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Room / Hostel No.</label>
+                    <input type="text" id="inp-room" placeholder="e.g. B-204" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-800 font-semibold outline-none text-sm transition" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Meal Plan</label>
+                    <select id="inp-plan" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 outline-none text-slate-800 font-medium bg-white text-xs">
+                      <option value="Both Lunch & Dinner">Lunch + Dinner (2 Meals)</option>
+                      <option value="Lunch Only">Lunch Only</option>
+                      <option value="Dinner Only">Dinner Only</option>
+                      <option value="Full Day (3 Meals)">Full Day (Breakfast+L+D)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Diet Preference</label>
+                    <select id="inp-diet" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 outline-none text-slate-800 font-medium bg-white text-xs">
+                      <option value="Pure Veg">Pure Veg</option>
+                      <option value="Veg + Non-Veg Days">Veg + Non-Veg Days</option>
+                      <option value="Jain / Swaminarayan">Jain / Swaminarayan</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Days tracking alteration controls -->
+                <div class="p-3 bg-amber-50/70 rounded-2xl border border-amber-200/70 space-y-2.5">
+                  <span class="font-black text-amber-900 uppercase tracking-wider text-[10px] block flex items-center justify-between">
+                    <span>Days & Validity Management</span>
+                    <i class="fa-solid fa-calculator text-amber-600"></i>
+                  </span>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-[11px] font-bold text-amber-950 block">Total Subscribed Days</label>
+                      <input type="number" id="inp-total-days" min="1" max="365" value="30" required class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-bold text-slate-800 outline-none text-sm" />
+                    </div>
+                    <div>
+                      <label class="text-[11px] font-bold text-amber-950 block">Days Consumed (Used)</label>
+                      <input type="number" id="inp-consumed-days" min="0" max="365" value="0" required class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white font-bold text-slate-800 outline-none text-sm" />
+                    </div>
+                  </div>
+
+                  <!-- Quick recharge buttons -->
+                  <div class="flex items-center gap-2 pt-1">
+                    <span class="text-[10px] text-amber-800 font-semibold">Quick Add Days:</span>
+                    <button type="button" onclick="adjustTotalDays(15)" class="px-2.5 py-1 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[10px] font-bold transition">+15 Days</button>
+                    <button type="button" onclick="adjustTotalDays(30)" class="px-2.5 py-1 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[10px] font-bold transition">+30 Days</button>
+                    <button type="button" onclick="adjustConsumedDays(-1)" title="Undo 1 day consumed" class="px-2.5 py-1 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-[10px] font-bold transition">-1 Day</button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Monthly Fee (₹)</label>
+                    <input type="number" id="inp-fee" placeholder="3200" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 font-bold text-slate-800 text-sm outline-none" />
+                  </div>
+                  <div>
+                    <label class="font-bold text-slate-700 mb-1 block">Payment Status</label>
+                    <select id="inp-payment" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 font-bold bg-white text-xs outline-none">
+                      <option value="Paid">Paid</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Partial">Partial</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="font-bold text-slate-700 mb-1 block">Subscription Start Date</label>
+                  <input type="date" id="inp-start-date" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-brand-500 text-xs font-semibold outline-none" />
+                </div>
+
+                <div class="pt-2">
+                  <button 
+                    type="submit" 
+                    id="btn-form-submit" 
+                    class="w-full py-3 bg-gradient-to-r from-brand-600 to-amber-500 hover:from-brand-700 hover:to-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-brand-600/30 transition text-sm flex items-center justify-center gap-2 active:scale-98"
+                  >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span id="btn-submit-text">Save New Member</span>
+                  </button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+
+          <!-- Right Column: Member Roster, Attendance Quick Punch & Actions (7 Cols) -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="glass-card rounded-3xl p-6 shadow-xl border border-white">
+              <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                <div>
+                  <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <span>Manage Mess Members</span>
+                    <span id="roster-count-badge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full font-bold">0</span>
+                  </h3>
+                  <p class="text-xs text-slate-400">Punch today's meals, alter details, or renew members.</p>
+                </div>
+                <!-- Search Filter in Roster -->
+                <div class="w-full sm:w-auto relative">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+                  <input 
+                    type="text" 
+                    id="admin-filter-query" 
+                    oninput="renderAdminRoster()" 
+                    placeholder="Search name/phone..." 
+                    class="w-full sm:w-48 pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-brand-500"
+                  />
+                </div>
+              </div>
+
+              <!-- Roster List Container -->
+              <div id="admin-roster-list" class="space-y-3 max-h-[580px] overflow-y-auto pr-1">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Admin Settings & Security Control Row -->
+        <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs border border-white">
+          <div class="flex items-center gap-2 text-slate-600">
+            <i class="fa-solid fa-shield-cat text-brand-600 text-base"></i>
+            <span>Administrator Security Controls & PIN Management</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="openChangePinModal()" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-key"></i> View / Change Security PIN
+            </button>
+            <button onclick="lockAdmin()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-lock"></i> Lock Session
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ATTENDANCE HISTORY MODAL -->
+  <div id="attendance-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-white relative max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-600 flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div>
+            <h3 id="modal-member-name" class="font-extrabold text-slate-900 text-base">Attendance History</h3>
+            <p id="modal-member-phone" class="text-xs text-slate-400 font-semibold"></p>
+          </div>
+        </div>
+        <button onclick="closeAttendanceModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="py-4 flex items-center justify-between bg-amber-50/70 p-3 rounded-2xl my-3 text-xs border border-amber-100">
+        <div>
+          <span class="text-slate-500 block">Total Days Punched</span>
+          <strong id="modal-total-punched" class="text-sm font-extrabold text-amber-800">0 Days</strong>
+        </div>
+        <div>
+          <span class="text-slate-500 block">Days Left to Eat</span>
+          <strong id="modal-remaining-days" class="text-sm font-extrabold text-brand-600">0 Days</strong>
+        </div>
+        <div>
+          <button id="modal-quick-punch-btn" onclick="punchTodayFromModal()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs shadow-sm transition">
+            + Punch Today
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-y-auto flex-1 pr-1">
+        <h4 class="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Punch Log</h4>
+        <div id="modal-attendance-logs" class="space-y-2 text-xs">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 text-right">
+        <button onclick="closeAttendanceModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN CHANGE PIN MODAL (Only accessible by Administrator) -->
+  <div id="pin-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-white relative space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-key text-sm"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-sm">Administrator PIN</h3>
+            <p class="text-[11px] text-slate-400">Only you can view or set this</p>
+          </div>
+        </div>
+        <button onclick="closeChangePinModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Current PIN display for administrator only -->
+      <div class="bg-amber-50 p-3 rounded-xl border border-amber-200/80 flex items-center justify-between text-xs">
+        <div>
+          <span class="text-amber-900 font-semibold block">Your Current Active PIN:</span>
+          <span id="current-pin-display" class="font-mono font-black text-amber-800 text-sm">••••••</span>
+        </div>
+        <button type="button" onclick="toggleRevealCurrentPin()" class="text-amber-800 hover:text-amber-950 font-bold underline text-[11px]">
+          <span id="reveal-pin-text">Show PIN</span>
+        </button>
+      </div>
+
+      <!-- Set New PIN Form -->
+      <form onsubmit="handleUpdatePin(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 mb-1 block">New Security PIN</label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="inp-new-pin" 
+              required 
+              minlength="4" 
+              maxlength="10" 
+              placeholder="Enter new 4-10 digit PIN" 
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 font-bold tracking-wider outline-none"
+            />
+            <button 
+              type="button" 
+              onclick="togglePinVisibility('inp-new-pin', 'new-eye-icon')" 
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <i id="new-eye-icon" class="fa-solid fa-eye text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 mb-1 block">Confirm New PIN</label>
+          <input 
+            type="password" 
+            id="inp-confirm-pin" 
+            required 
+            minlength="4" 
+            maxlength="10" 
+            placeholder="Re-enter new PIN" 
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-brand-500 font-bold tracking-wider outline-none"
+          />
+        </div>
+
+        <div class="pt-2">
+          <button 
+            type="submit" 
+            class="w-full py-2.5 bg-gradient-to-r from-brand-600 to-amber-500 hover:from-brand-700 hover:to-amber-600 text-white font-bold rounded-xl shadow-md transition"
+          >
+            Update Security PIN
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full border-t border-orange-100/70 py-4 text-center text-xs text-slate-400">
+    <p>© 2026 Annapurna Smart Mess Management System. Built for effortless daily dining records.</p>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: STORE, LOGIC, ATTENDANCE & SYNC MODULE       -->
+  <!-- ======================================================== -->
+  <script>
+    /**
+     * DEFAULT INITIAL SEED DATA
+     * Preloaded so the app works immediately upon opening!
+     */
+    const INITIAL_MEMBERS = [
+      {
+        name: "Akash Shinde",
+        phone: "9876543210",
+        room: "A-102",
+        plan: "Both Lunch & Dinner",
+        diet: "Veg + Non-Veg Days",
+        totalDays: 30,
+        consumedDays: 27, // 3 days left (Alert stage)
+        fee: 3200,
+        payment: "Paid",
+        startDate: "2026-10-01",
+        attendance: [
+          { date: "2026-10-24", meal: "Lunch & Dinner", note: "Regular Meal" },
+          { date: "2026-10-25", meal: "Lunch & Dinner", note: "Regular Meal" },
+          { date: "2026-10-26", meal: "Lunch Only", note: "Half day punch" }
+        ]
+      },
+      {
+        name: "Pratik Deshmukh",
+        phone: "9123456789",
+        room: "B-205",
+        plan: "Full Day (3 Meals)",
+        diet: "Pure Veg",
+        totalDays: 30,
+        consumedDays: 12, // 18 days left
+        fee: 3800,
+        payment: "Paid",
+        startDate: "2026-10-15",
+        attendance: [
+          { date: "2026-10-25", meal: "Breakfast, Lunch, Dinner", note: "Punch OK" },
+          { date: "2026-10-26", meal: "Breakfast, Lunch, Dinner", note: "Punch OK" }
+        ]
+      },
+      {
+        name: "Saurabh Joshi",
+        phone: "9988776655",
+        room: "C-12",
+        plan: "Dinner Only",
+        diet: "Jain / Swaminarayan",
+        totalDays: 30,
+        consumedDays: 30, // 0 days left (Expired)
+        fee: 2000,
+        payment: "Pending",
+        startDate: "2026-09-25",
+        attendance: []
+      }
+    ];
+
+    // Local Storage Keys
+    const STORAGE_KEY = "annapurna_mess_members_v2";
+    const PIN_STORAGE_KEY = "annapurna_admin_secure_pin";
+    const DEFAULT_ADMIN_PIN = "1234"; // Default initial fallback PIN
+
+    // Application State
+    let membersData = [];
+    let isEditing = false;
+    let currentEditPhone = null;
+    let activeModalMember = null;
+    let currentAdminPin = DEFAULT_ADMIN_PIN;
+    let isPinRevealed = false;
+
+    // Load initial data & PIN
+    function initDatabase() {
+      // 1. Load Admin PIN
+      const storedPin = localStorage.getItem(PIN_STORAGE_KEY);
+      if (storedPin) {
+        currentAdminPin = storedPin;
+      } else {
+        currentAdminPin = DEFAULT_ADMIN_PIN;
+        localStorage.setItem(PIN_STORAGE_KEY, currentAdminPin);
+      }
+
+      // 2. Load Members
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          membersData = JSON.parse(stored);
+        } catch (e) {
+          membersData = INITIAL_MEMBERS;
+          saveToDisk();
+        }
+      } else {
+        membersData = INITIAL_MEMBERS;
+        saveToDisk();
+      }
+      // Set today's date in form default
+      document.getElementById('inp-start-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function saveToDisk() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(membersData));
+    }
+
+    // ==========================================
+    // TAB NAVIGATION
+    // ==========================================
+    function switchMainTab(tab) {
+      const viewLookup = document.getElementById("view-lookup");
+      const viewAdmin = document.getElementById("view-admin");
+      const btnLookup = document.getElementById("nav-btn-lookup");
+      const btnAdmin = document.getElementById("nav-btn-admin");
+
+      if (tab === 'lookup') {
+        viewLookup.classList.remove("hidden");
+        viewAdmin.classList.add("hidden");
+        btnLookup.className = "px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 bg-white text-brand-600 shadow-sm";
+        btnAdmin.className = "px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 text-slate-600 hover:text-brand-600";
+      } else {
+        viewLookup.classList.add("hidden");
+        viewAdmin.classList.remove("hidden");
+        btnAdmin.className = "px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 bg-white text-brand-600 shadow-sm";
+        btnLookup.className = "px-4 py-2 rounded-xl transition duration-200 flex items-center gap-2 text-slate-600 hover:text-brand-600";
+      }
+    }
+
+    // ==========================================
+    // TOAST NOTIFICATIONS
+    // ==========================================
+    let toastTimeout = null;
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toast-notification");
+      const inner = document.getElementById("toast-inner");
+      const icon = document.getElementById("toast-icon");
+      const text = document.getElementById("toast-text");
+
+      text.innerText = msg;
+
+      if (type === "success") {
+        inner.className = "px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border text-sm font-semibold bg-emerald-600 text-white border-emerald-500";
+        icon.className = "fa-solid fa-circle-check";
+      } else if (type === "error") {
+        inner.className = "px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border text-sm font-semibold bg-rose-600 text-white border-rose-500";
+        icon.className = "fa-solid fa-triangle-exclamation";
+      } else {
+        inner.className = "px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border text-sm font-semibold bg-slate-800 text-white border-slate-700";
+        icon.className = "fa-solid fa-circle-info";
+      }
+
+      container.classList.remove("translate-y-[-100px]", "opacity-0");
+      container.classList.add("translate-y-0", "opacity-100");
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        container.classList.remove("translate-y-0", "opacity-100");
+        container.classList.add("translate-y-[-100px]", "opacity-0");
+      }, 3000);
+    }
+
+    // ==========================================
+    // STUDENT / MEMBER LOOKUP
+    // ==========================================
+    function quickFillPhone(phone) {
+      document.getElementById("student-search-phone").value = phone;
+      handleStudentLookup();
+    }
+
+    function handleStudentLookup() {
+      const phoneInput = document.getElementById("student-search-phone").value.trim();
+      const container = document.getElementById("student-card-container");
+      const emptyState = document.getElementById("student-empty-state");
+
+      if (!phoneInput) {
+        showToast("Please enter a 10-digit mobile number", "error");
+        return;
+      }
+
+      const member = membersData.find(m => m.phone === phoneInput);
+
+      if (!member) {
+        emptyState.classList.remove("hidden");
+        container.classList.add("hidden");
+        showToast("No mess membership found for this number", "error");
+        return;
+      }
+
+      const total = parseInt(member.totalDays || 30);
+      const consumed = parseInt(member.consumedDays || 0);
+      const remaining = Math.max(0, total - consumed);
+      const percent = Math.min(100, Math.round((consumed / total) * 100));
+
+      let statusColor = "text-emerald-600 bg-emerald-50 border-emerald-200";
+      let statusText = "Active Membership";
+      if (remaining === 0) {
+        statusColor = "text-rose-600 bg-rose-50 border-rose-200";
+        statusText = "Subscription Expired - Please Renew";
+      } else if (remaining <= 3) {
+        statusColor = "text-amber-600 bg-amber-50 border-amber-200";
+        statusText = "Expiring Soon! Renew Today";
+      }
+
+      container.innerHTML = `
+        <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-white space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-2xl font-extrabold text-slate-900">${member.name}</h3>
+                <span class="text-xs px-2.5 py-1 rounded-full font-bold border ${statusColor}">
+                  ${statusText}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 font-medium mt-1">
+                <i class="fa-solid fa-phone text-slate-400 mr-1"></i> +91 ${member.phone} 
+                ${member.room ? `• <i class="fa-solid fa-door-closed text-slate-400 mx-1"></i> Room: ${member.room}` : ''}
+              </p>
+            </div>
+            <div class="sm:text-right">
+              <span class="text-xs text-slate-400 font-medium block">Subscription Period</span>
+              <span class="text-sm font-bold text-slate-800">Started on ${member.startDate || 'N/A'}</span>
+            </div>
+          </div>
+
+          <!-- Highlight Days Left Display -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-200/60 text-center">
+              <span class="text-xs text-amber-900 font-bold uppercase tracking-wider block">Remaining Food Days</span>
+              <strong class="text-4xl font-black text-amber-700">${remaining}</strong>
+              <span class="text-xs text-amber-800 font-semibold block mt-0.5">Days Left to Eat</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 text-center">
+              <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Meals Taken (Used)</span>
+              <strong class="text-4xl font-black text-slate-800">${consumed}</strong>
+              <span class="text-xs text-slate-500 font-semibold block mt-0.5">Days Punched</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 text-center">
+              <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Total Days Plan</span>
+              <strong class="text-4xl font-black text-slate-800">${total}</strong>
+              <span class="text-xs text-slate-500 font-semibold block mt-0.5">Plan Validity</span>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-600">
+              <span>Days Consumed Progress</span>
+              <span>${percent}% used</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+              <div class="h-full bg-gradient-to-r from-amber-500 to-brand-600 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+            </div>
+          </div>
+
+          <!-- Plan Details Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-slate-50/70 p-4 rounded-2xl border border-slate-200/60">
+            <div>
+              <span class="text-slate-400 block font-semibold">Meal Type</span>
+              <strong class="text-slate-800 font-bold">${member.plan || 'Lunch + Dinner'}</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-semibold">Diet Type</span>
+              <strong class="text-slate-800 font-bold">${member.diet || 'Regular'}</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-semibold">Monthly Mess Fee</span>
+              <strong class="text-slate-800 font-bold">₹${member.fee || '3000'}</strong>
+            </div>
+            <div>
+              <span class="text-slate-400 block font-semibold">Payment Status</span>
+              <strong class="${member.payment === 'Paid' ? 'text-emerald-600' : 'text-rose-600'} font-bold">${member.payment || 'Paid'}</strong>
+            </div>
+          </div>
+
+          <!-- Attendance Log Shortcut -->
+          <div class="flex items-center justify-between pt-2">
+            <span class="text-xs text-slate-500 font-medium">Want to see all your meal attendance logs?</span>
+            <button onclick="openAttendanceModal('${member.phone}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i> View Attendance History
+            </button>
+          </div>
+        </div>
+      `;
+
+      emptyState.classList.add("hidden");
+      container.classList.remove("hidden");
+      showToast(`Found details for ${member.name}!`, "success");
+    }
+
+    // ==========================================
+    // ADMIN AUTHENTICATION & PIN MANAGEMENT
+    // ==========================================
+    function unlockAdmin() {
+      const pin = document.getElementById("admin-pin-input").value.trim();
+      if (pin === currentAdminPin) {
+        document.getElementById("admin-lock-screen").classList.add("hidden");
+        document.getElementById("admin-dashboard-content").classList.remove("hidden");
+        showToast("Admin session unlocked", "success");
+        renderAdminRoster();
+        updateAdminStats();
+      } else {
+        showToast("Incorrect security PIN! Access denied.", "error");
+      }
+    }
+
+    function lockAdmin() {
+      document.getElementById("admin-pin-input").value = "";
+      document.getElementById("admin-lock-screen").classList.remove("hidden");
+      document.getElementById("admin-dashboard-content").classList.add("hidden");
+      showToast("Admin locked");
+    }
+
+    // Toggle password eye visibility
+    function togglePinVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.className = "fa-solid fa-eye-slash text-xs";
+      } else {
+        input.type = "password";
+        icon.className = "fa-solid fa-eye text-xs";
+      }
+    }
+
+    // Open Change/View PIN modal
+    function openChangePinModal() {
+      isPinRevealed = false;
+      document.getElementById("current-pin-display").innerText = "••••••";
+      document.getElementById("reveal-pin-text").innerText = "Show PIN";
+      document.getElementById("inp-new-pin").value = "";
+      document.getElementById("inp-confirm-pin").value = "";
+      document.getElementById("pin-modal").classList.remove("hidden");
+    }
+
+    function closeChangePinModal() {
+      document.getElementById("pin-modal").classList.add("hidden");
+    }
+
+    function toggleRevealCurrentPin() {
+      isPinRevealed = !isPinRevealed;
+      const display = document.getElementById("current-pin-display");
+      const btnText = document.getElementById("reveal-pin-text");
+      if (isPinRevealed) {
+        display.innerText = currentAdminPin;
+        btnText.innerText = "Hide PIN";
+      } else {
+        display.innerText = "••••••";
+        btnText.innerText = "Show PIN";
+      }
+    }
+
+    function handleUpdatePin(e) {
+      e.preventDefault();
+      const newPin = document.getElementById("inp-new-pin").value.trim();
+      const confirmPin = document.getElementById("inp-confirm-pin").value.trim();
+
+      if (newPin.length < 4) {
+        showToast("PIN must be at least 4 digits long", "error");
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        showToast("New PIN and Confirm PIN do not match", "error");
+        return;
+      }
+
+      currentAdminPin = newPin;
+      localStorage.setItem(PIN_STORAGE_KEY, newPin);
+      showToast("Security PIN updated successfully!", "success");
+      closeChangePinModal();
+    }
+
+    // ==========================================
+    // ADMIN FORM HANDLING (ADD & MODIFY)
+    // ==========================================
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("inp-name").value.trim();
+      const phone = document.getElementById("inp-phone").value.trim();
+      const room = document.getElementById("inp-room").value.trim();
+      const plan = document.getElementById("inp-plan").value;
+      const diet = document.getElementById("inp-diet").value;
+      const totalDays = parseInt(document.getElementById("inp-total-days").value) || 30;
+      const consumedDays = parseInt(document.getElementById("inp-consumed-days").value) || 0;
+      const fee = document.getElementById("inp-fee").value.trim();
+      const payment = document.getElementById("inp-payment").value;
+      const startDate = document.getElementById("inp-start-date").value || new Date().toISOString().split('T')[0];
+
+      if (phone.length < 10) {
+        showToast("Please enter a valid 10-digit mobile number", "error");
+        return;
+      }
+
+      if (isEditing && currentEditPhone) {
+        // UPDATE / MODIFY EXISTING RECORD
+        const index = membersData.findIndex(m => m.phone === currentEditPhone);
+        if (index !== -1) {
+          // Keep attendance logs intact
+          const existingLogs = membersData[index].attendance || [];
+
+          membersData[index] = {
+            ...membersData[index],
+            name,
+            phone,
+            room,
+            plan,
+            diet,
+            totalDays,
+            consumedDays,
+            fee,
+            payment,
+            startDate,
+            attendance: existingLogs
+          };
+
+          saveToDisk();
+          showToast(`Record updated for ${name}`, "success");
+          resetFormToCreate();
+        }
+      } else {
+        // CREATE NEW RECORD
+        const exists = membersData.some(m => m.phone === phone);
+        if (exists) {
+          showToast("A member with this mobile number already exists! Use Edit button to alter.", "error");
+          return;
+        }
+
+        const newMember = {
+          name,
+          phone,
+          room,
+          plan,
+          diet,
+          totalDays,
+          consumedDays,
+          fee: fee || 3000,
+          payment,
+          startDate,
+          attendance: []
+        };
+
+        membersData.unshift(newMember);
+        saveToDisk();
+        showToast(`New member ${name} enrolled successfully!`, "success");
+        resetFormToCreate();
+      }
+
+      renderAdminRoster();
+      updateAdminStats();
+
+      // If user had active lookup for this phone, refresh it
+      const currentLookupPhone = document.getElementById("student-search-phone").value.trim();
+      if (currentLookupPhone === phone) {
+        handleStudentLookup();
+      }
+    }
+
+    // Load member into form to edit / alter
+    function loadMemberForEdit(phone) {
+      const member = membersData.find(m => m.phone === phone);
+      if (!member) return;
+
+      isEditing = true;
+      currentEditPhone = member.phone;
+
+      // Populate Inputs
+      document.getElementById("inp-name").value = member.name || '';
+      document.getElementById("inp-phone").value = member.phone || '';
+      document.getElementById("inp-room").value = member.room || '';
+      document.getElementById("inp-plan").value = member.plan || 'Both Lunch & Dinner';
+      document.getElementById("inp-diet").value = member.diet || 'Pure Veg';
+      document.getElementById("inp-total-days").value = member.totalDays || 30;
+      document.getElementById("inp-consumed-days").value = member.consumedDays || 0;
+      document.getElementById("inp-fee").value = member.fee || 3000;
+      document.getElementById("inp-payment").value = member.payment || 'Paid';
+      document.getElementById("inp-start-date").value = member.startDate || new Date().toISOString().split('T')[0];
+
+      // Update Form UI state
+      document.getElementById("form-mode-title").innerText = `Modifying: ${member.name}`;
+      document.getElementById("form-mode-badge").className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500 text-white mb-3";
+      document.getElementById("btn-submit-text").innerText = "Save Modified Changes";
+      document.getElementById("btn-cancel-edit").classList.remove("hidden");
+
+      // Scroll to form smoothly
+      document.getElementById("member-form").scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showToast(`Loaded ${member.name} for editing`, "info");
+    }
+
+    function resetFormToCreate() {
+      isEditing = false;
+      currentEditPhone = null;
+      document.getElementById("member-form").reset();
+      document.getElementById("inp-start-date").value = new Date().toISOString().split('T')[0];
+      document.getElementById("inp-total-days").value = 30;
+      document.getElementById("inp-consumed-days").value = 0;
+
+      document.getElementById("form-mode-title").innerText = "Add New Member";
+      document.getElementById("form-mode-badge").className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-100 text-brand-700 mb-3";
+      document.getElementById("btn-submit-text").innerText = "Save New Member";
+      document.getElementById("btn-cancel-edit").classList.add("hidden");
+    }
+
+    // Helper functions for days stepper inside form
+    function adjustTotalDays(delta) {
+      const inp = document.getElementById("inp-total-days");
+      inp.value = Math.max(1, (parseInt(inp.value) || 0) + delta);
+    }
+    function adjustConsumedDays(delta) {
+      const inp = document.getElementById("inp-consumed-days");
+      inp.value = Math.max(0, (parseInt(inp.value) || 0) + delta);
+    }
+
+    // ==========================================
+    // ATTENDANCE & DAYS CONTROLS
+    // ==========================================
+    // Quick Attendance Punch (+1 day consumed)
+    function quickPunchDay(phone) {
+      const index = membersData.findIndex(m => m.phone === phone);
+      if (index === -1) return;
+
+      const member = membersData[index];
+      const total = parseInt(member.totalDays || 30);
+      let consumed = parseInt(member.consumedDays || 0);
+
+      if (consumed >= total) {
+        showToast(`${member.name} has already used all ${total} days! Recharge to continue.`, "error");
+        return;
+      }
+
+      consumed += 1;
+      member.consumedDays = consumed;
+
+      // Add log
+      if (!member.attendance) member.attendance = [];
+      const todayStr = new Date().toISOString().split('T')[0];
+      member.attendance.unshift({
+        date: todayStr,
+        meal: member.plan || "Regular Meal",
+        note: `Punch #${consumed} (${total - consumed} days left)`
+      });
+
+      saveToDisk();
+      renderAdminRoster();
+      updateAdminStats();
+      showToast(`Punched attendance for ${member.name}! Days left: ${total - consumed}`, "success");
+
+      // Refresh student view if displayed
+      const currentLookupPhone = document.getElementById("student-search-phone").value.trim();
+      if (currentLookupPhone === phone) {
+        handleStudentLookup();
+      }
+    }
+
+    // Quick Renewal / Recharge days for a member
+    function quickRechargeDays(phone, daysToAdd) {
+      const index = membersData.findIndex(m => m.phone === phone);
+      if (index === -1) return;
+
+      membersData[index].totalDays = (parseInt(membersData[index].totalDays) || 0) + daysToAdd;
+      saveToDisk();
+      renderAdminRoster();
+      updateAdminStats();
+      showToast(`Added +${daysToAdd} days to ${membersData[index].name}!`, "success");
+
+      // Refresh student view if displayed
+      const currentLookupPhone = document.getElementById("student-search-phone").value.trim();
+      if (currentLookupPhone === phone) {
+        handleStudentLookup();
+      }
+    }
+
+    // Delete a member
+    function deleteMember(phone) {
+      const member = membersData.find(m => m.phone === phone);
+      if (!member) return;
+
+      // Safe confirmation using standard UI modal simulation / immediate confirm
+      const confirmed = window.confirm(`Are you sure you want to remove ${member.name} (${member.phone}) from the database?`);
+      if (confirmed) {
+        membersData = membersData.filter(m => m.phone !== phone);
+        saveToDisk();
+        renderAdminRoster();
+        updateAdminStats();
+        showToast(`${member.name} deleted successfully.`, "info");
+
+        // Clear lookup if same member was displayed
+        const currentLookupPhone = document.getElementById("student-search-phone").value.trim();
+        if (currentLookupPhone === phone) {
+          document.getElementById("student-card-container").classList.add("hidden");
+          document.getElementById("student-empty-state").classList.remove("hidden");
+        }
+      }
+    }
+
+    // ==========================================
+    // ATTENDANCE LOG MODAL
+    // ==========================================
+    function openAttendanceModal(phone) {
+      const member = membersData.find(m => m.phone === phone);
+      if (!member) return;
+
+      activeModalMember = member;
+
+      document.getElementById("modal-member-name").innerText = member.name;
+      document.getElementById("modal-member-phone").innerText = `+91 ${member.phone} • Room: ${member.room || 'N/A'}`;
+
+      const total = parseInt(member.totalDays || 30);
+      const consumed = parseInt(member.consumedDays || 0);
+      const remaining = Math.max(0, total - consumed);
+
+      document.getElementById("modal-total-punched").innerText = `${consumed} Days`;
+      document.getElementById("modal-remaining-days").innerText = `${remaining} Days Left`;
+
+      const logsBox = document.getElementById("modal-attendance-logs");
+      logsBox.innerHTML = "";
+
+      if (!member.attendance || member.attendance.length === 0) {
+        logsBox.innerHTML = `
+          <div class="text-center py-6 text-slate-400">
+            <i class="fa-regular fa-calendar-xmark text-2xl mb-1"></i>
+            <p>No punches recorded yet.</p>
+          </div>
+        `;
+      } else {
+        member.attendance.forEach((log, idx) => {
+          logsBox.innerHTML += `
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-orange-100 text-brand-700 font-bold flex items-center justify-center text-[10px]">
+                  #${member.attendance.length - idx}
+                </span>
+                <div>
+                  <strong class="text-slate-800">${log.date}</strong>
+                  <span class="text-[11px] text-slate-500 block">${log.meal}</span>
+                </div>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium">${log.note || 'Recorded'}</span>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById("attendance-modal").classList.remove("hidden");
+    }
+
+    function closeAttendanceModal() {
+      document.getElementById("attendance-modal").classList.add("hidden");
+      activeModalMember = null;
+    }
+
+    function punchTodayFromModal() {
+      if (!activeModalMember) return;
+      quickPunchDay(activeModalMember.phone);
+      openAttendanceModal(activeModalMember.phone); // Refresh modal view
+    }
+
+    // ==========================================
+    // RENDER ADMIN ROSTER TABLE
+    // ==========================================
+    function renderAdminRoster() {
+      const filter = (document.getElementById("admin-filter-query")?.value || "").toLowerCase().trim();
+      const listContainer = document.getElementById("admin-roster-list");
+      const countBadge = document.getElementById("roster-count-badge");
+
+      if (!listContainer) return;
+
+      const filtered = membersData.filter(m => 
+        m.name.toLowerCase().includes(filter) || 
+        m.phone.includes(filter) || 
+        (m.room && m.room.toLowerCase().includes(filter))
+      );
+
+      countBadge.innerText = filtered.length;
+      listContainer.innerHTML = "";
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-10 text-slate-400 text-xs">
+            <i class="fa-solid fa-user-slash text-2xl mb-1"></i>
+            <p>No members match your search criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(m => {
+        const total = parseInt(m.totalDays || 30);
+        const consumed = parseInt(m.consumedDays || 0);
+        const remaining = Math.max(0, total - consumed);
+
+        // Warning class for remaining days
+        let statusBadge = '';
+        if (remaining === 0) {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">Expired</span>';
+        } else if (remaining <= 3) {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">${remaining}d left!</span>`;
+        } else {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">${remaining}d left</span>`;
+        }
+
+        const card = document.createElement("div");
+        card.className = "p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-brand-300 transition space-y-2";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold text-slate-900 text-sm">${m.name}</h4>
+                ${statusBadge}
+              </div>
+              <p class="text-xs text-slate-500 font-medium">
+                <i class="fa-solid fa-phone text-[10px] text-slate-400"></i> ${m.phone} • Room: ${m.room || 'N/A'}
+              </p>
+            </div>
+            
+            <div class="text-right">
+              <span class="text-xs font-black text-slate-800">${consumed} / ${total} Days</span>
+              <span class="block text-[10px] text-slate-400 font-medium">${m.payment} (₹${m.fee || '3000'})</span>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-xs">
+            <!-- Left: Attendance & Extension -->
+            <div class="flex items-center gap-1.5">
+              <button 
+                onclick="quickPunchDay('${m.phone}')" 
+                title="Punch 1 day meal attendance"
+                class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-lg text-xs font-bold transition flex items-center gap-1"
+              >
+                <i class="fa-solid fa-plus text-[10px]"></i> Punch Day
+              </button>
+
+              <button 
+                onclick="openAttendanceModal('${m.phone}')" 
+                title="View Attendance History"
+                class="p-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition"
+              >
+                <i class="fa-solid fa-calendar-check text-[11px]"></i>
+              </button>
+
+              <button 
+                onclick="quickRechargeDays('${m.phone}', 30)" 
+                title="Renew for +30 days"
+                class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-[11px] font-bold transition"
+              >
+                +30d Renew
+              </button>
+            </div>
+
+            <!-- Right: Modify / Delete -->
+            <div class="flex items-center gap-1.5">
+              <button 
+                onclick="loadMemberForEdit('${m.phone}')" 
+                title="Modify data (fees, room, days, diet)"
+                class="px-2.5 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition flex items-center gap-1"
+              >
+                <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit
+              </button>
+
+              <button 
+                onclick="deleteMember('${m.phone}')" 
+                title="Delete this record"
+                class="p-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition"
+              >
+                <i class="fa-solid fa-trash-can text-[11px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        listContainer.appendChild(card);
+      });
+    }
+
+    // ==========================================
+    // STATS AGGREGATOR
+    // ==========================================
+    function updateAdminStats() {
+      const totalCount = membersData.length;
+      let expiringCount = 0;
+      let pendingFeesCount = 0;
+      let todayMealsCount = 0;
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      membersData.forEach(m => {
+        const total = parseInt(m.totalDays || 30);
+        const consumed = parseInt(m.consumedDays || 0);
+        const left = Math.max(0, total - consumed);
+
+        if (left <= 3) expiringCount++;
+        if (m.payment === 'Pending' || m.payment === 'Partial') pendingFeesCount++;
+
+        if (m.attendance && m.attendance.some(a => a.date === todayStr)) {
+          todayMealsCount++;
+        }
+      });
+
+      document.getElementById("stat-total-members").innerText = totalCount;
+      document.getElementById("stat-expiring").innerText = expiringCount;
+      document.getElementById("stat-pending-fees").innerText = pendingFeesCount;
+      document.getElementById("stat-today-meals").innerText = todayMealsCount;
+    }
+
+    // Window load bootstrap
+    window.addEventListener("DOMContentLoaded", () => {
+      initDatabase();
+    });
+  </script>
+
+</body>
+</html>
